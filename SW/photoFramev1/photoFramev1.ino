@@ -14,7 +14,8 @@
 #define TFT_SLOWER 3
 #define SD_CS    4  // Chip select line for SD card
 
-volatile int ChangingPicSpeed = 3; //initial speed every 3s
+volatile int ChangingPicSpeed = 5; //initial speed every 5s
+
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
 
 void setup(void) {
@@ -48,7 +49,8 @@ void isr_0(){
 }
 
 void isr_1(){
-  ChangingPicSpeed++;
+  if (ChangingPicSpeed < 15)
+    ChangingPicSpeed++;
 }
 
 
