@@ -10,8 +10,11 @@
 #define TFT_DC   9  // Data/command line for TFT
 #define TFT_LED  7
 
+#define TFT_FASTER 2
+#define TFT_SLOWER 3
 #define SD_CS    4  // Chip select line for SD card
 
+volatile int ChangingPicSpeed = 3; //initial speed every 3s
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
 
 void setup(void) {
@@ -31,7 +34,25 @@ void setup(void) {
   if (!SD.begin(SD_CS)) {
     return;
   }
+
+  pinMode(TFT_FASTER, INPUT_PULLUP);
+  attachInterrupt(0,isr_0,FALLING);
+  pinMode(TFT_SLOWER, INPUT_PULLUP);
+  attachInterrupt(1,isr_1,FALLING);
+ 
 }
+
+void isr_0(){
+  if (ChangingPicSpeed > 1) 
+    ChangingPicSpeed--;
+}
+
+void isr_1(){
+  ChangingPicSpeed++;
+}
+
+
+
 
 void loop() {
   File path = SD.open("/");
@@ -54,7 +75,7 @@ void printDirectoryR(File dir, int numTabs)
       bmpDraw(entry.name(),0,0);
     }
     entry.close();
-    delay(3000);
+    delay(ChangingPicSpeed * 1000);
   }
 }
 
